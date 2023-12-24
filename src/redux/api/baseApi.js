@@ -5,7 +5,7 @@ const baseApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000",
   }),
-  tagTypes: ["login",'logout'],
+  tagTypes: ["login", "logout", "cart"],
   endpoints: (builder) => ({
     createUser: builder.mutation({
       query: ({ email, password, username, photoUrl }) => ({
@@ -26,55 +26,58 @@ const baseApi = createApi({
       query: () => ({ url: `/user` }),
       invalidatesTags: ["login"],
     }),
-    setCurrentUser:builder.mutation({
+    setCurrentUser: builder.mutation({
       query: ({ email, username, photoUrl }) => ({
         url: "/setcurrentuser",
         method: "POST",
         body: { email, username, photoUrl },
       }),
-      providesTags: ["login"],
+      providesTags: ["login", "cart"],
     }),
-    
+
     deleteCurrentUser: builder.mutation({
-      query: (email) => ({ 
-        url: `/deletecurrentitem`, 
+      query: (email) => ({
+        url: `/deletecurrentitem`,
         method: "DELETE",
-        body: {email},
+        body: { email },
       }),
-      invalidatesTags: ["login",'logout'],
+      invalidatesTags: ["login", "logout", "cart"],
     }),
-    
+
     getCurrentUser: builder.query({
       query: () => ({ url: `/setcurrentuser` }),
-      providesTags:[ "login",'logout'],
+      providesTags: ["login", "logout", "cart"],
     }),
     getProducts: builder.query({
       query: () => ({ url: `/products` }),
-      // providesTags:[ "login",'logout'],
+      providesTags: ["login", "logout"],
     }),
 
-     createCart: builder.mutation({
-       query: ({email,image,title,size,color,qt}) => ({
-      url: "/addtocart",
-      method: "POST",
-      body: { email,image,title,size,color,qt },
+    createCart: builder.mutation({
+      query: ({ email, image, title, size, color, qt, id, price }) => ({
+        url: "/addtocart",
+        method: "POST",
+        body: { email, image, title, size, color, qt, id, price },
+      }),
+      invalidatesTags: ["cart"],
     }),
-    // providesTags: ["login"],
+    getCart: builder.query({
+      query: () => ({ url: `/addtocart` }),
+      providesTags: ["login", "logout", "cart"],
+    }),
   }),
-    
-  }),
-  
 });
 
-export const { useCreateUserMutation,
-   useLoginUserMutation,
-    useGetUserQuery,
-    useSetCurrentUserMutation,
-    useGetCurrentUserQuery,
-    useDeleteCurrentUserMutation,
-    useGetProductsQuery,
-    useCreateCartMutation
-} =
-  baseApi;
+export const {
+  useCreateUserMutation,
+  useLoginUserMutation,
+  useGetUserQuery,
+  useSetCurrentUserMutation,
+  useGetCurrentUserQuery,
+  useDeleteCurrentUserMutation,
+  useGetProductsQuery,
+  useCreateCartMutation,
+  useGetCartQuery,
+} = baseApi;
 
 export default baseApi;

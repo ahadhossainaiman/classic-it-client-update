@@ -1,57 +1,80 @@
-import RootLayouts from '@/components/Layouts/RootLayouts';
-import { useCreateCartMutation, useGetCurrentUserQuery, useGetProductsQuery } from '@/redux/api/baseApi';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
+import RootLayouts from "@/components/Layouts/RootLayouts";
+import {
+  useCreateCartMutation,
+  useGetCurrentUserQuery,
+  useGetProductsQuery,
+} from "@/redux/api/baseApi";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 
-const productId = ({product}) => {
-    const params = useParams();
-    const [color,setColor] = useState('');
-    const [size,setSize] = useState('');
-    const {currentData  } = useGetProductsQuery();
-    const data = useGetCurrentUserQuery();
-    const [setCart,res] = useCreateCartMutation();
-    const productDetails = currentData?.find(product=>product?._id===params?.productId);
-    
-    const currentUser = {...data?.data}
-    console.log(currentUser[0]);
-    const handleAddCart = ()=>{
-        setCart({email:currentUser[0].email,image:productDetails?.image,title:productDetails?.title,size,color,qt:1})
-        // params.push('/cart');
-    }
-    // console.log(productDetails);
-    // console.log(color,size);
-    
+const productId = ({ product }) => {
+  const router = useRouter();
+  const params = useParams();
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const { currentData } = useGetProductsQuery();
+  const data = useGetCurrentUserQuery();
+  const [setCart, res] = useCreateCartMutation();
+  const productDetails = currentData?.find(
+    (product) => product?._id === params?.productId
+  );
 
-    return (
-        <div className='grid grid-cols-6 w-[80%] mx-auto gap-5 my-24'>
-            <div className='col-span-2'>
-           <img className='rounded-lg' src={productDetails?.image} alt="" />
-            </div>
-            <div className='col-span-4'>
-                <h1 className='text-5xl '>{productDetails?.title}</h1>
-                <p className='text-4xl font-bold mt-5'>${productDetails?.price}</p>
-                <img className='mt-5' src="https://believerssign.com/wp-content/uploads/2023/03/panjabi-large.png" alt="" />
+  const currentUser = { ...data?.data };
+  const handleAddCart = () => {
+    setCart({
+      email: currentUser[0]?.email,
+      image: productDetails?.image,
+      title: productDetails?.title,
+      size,
+      color,
+      price: productDetails?.price,
+      qt: 1,
+      id: productDetails?._id,
+    });
+    console.log(res);
+    console.log(params);
+    router.push("/addtocart");
+  };
+  // console.log(productDetails);
+  // console.log(color,size);
 
-                <div className="card-actions py-2">
+  return (
+    <div className="grid grid-cols-6 w-[80%] mx-auto gap-5 my-24">
+      <div className="col-span-2">
+        <img className="rounded-lg" src={productDetails?.image} alt="" />
+      </div>
+      <div className="col-span-4">
+        <h1 className="text-3xl ">{productDetails?.title}</h1>
+        <p className="text-3xl font-bold mt-5">${productDetails?.price}</p>
+        <img
+          className="mt-5"
+          src="https://believerssign.com/wp-content/uploads/2023/03/panjabi-large.png"
+          alt=""
+        />
+
+        <div className="card-actions py-2">
           <select
             className="w-40 outline-none border border-black rounded-lg px-2 font-semibold"
             name=""
             id=""
             onClick={(e) => setColor(e.target.value)}
           >
-            <option className={`w-[100%] bg-[${color}]`} value="">Color</option>
+            <option className={`w-[100%] bg-[${color}]`} value="">
+              Color
+            </option>
             {productDetails?.variation?.color.map((color, index) => (
-              <option className={`checked:bg-[${color}]-500`} key={index} value={color}>
-            
-               {color}
-                
-              
-               
+              <option
+                className={`checked:bg-[${color}]-500`}
+                key={index}
+                value={color}
+              >
+                {color}
               </option>
             ))}
           </select>
-        <select
+          <select
             className="w-40 outline-none border border-black rounded-lg px-2 font-semibold"
             name=""
             id=""
@@ -63,21 +86,25 @@ const productId = ({product}) => {
                 {size}
               </option>
             ))}
-        </select>
-      
+          </select>
         </div>
-        <p onClick={handleAddCart}  className='w-[30%] py-2 text-center bg-black text-white'>ADD TO CART</p>
-        <p className='text-gray-400 text-xl mt-5'>Description:</p>
-        <p className='text-gray-400 text-xs'>{productDetails?.description}</p>
-        </div> 
-        </div>
-    );
+        <p
+          onClick={handleAddCart}
+          className="w-[50%] py-2 text-center cursor-pointer bg-black text-white"
+        >
+          ADD TO CART
+        </p>
+        <p className="text-gray-400 text-xl mt-5">Description:</p>
+        <p className="text-gray-400 text-xs">{productDetails?.description}</p>
+      </div>
+    </div>
+  );
 };
 
 export default productId;
 productId.getLayout = function (page) {
-    return <RootLayouts>{page}</RootLayouts>
-}
+  return <RootLayouts>{page}</RootLayouts>;
+};
 
 // export const getStaticPaths = async ()=>{
 

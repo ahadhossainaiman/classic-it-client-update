@@ -1,4 +1,8 @@
-import { useDeleteCurrentUserMutation, useGetCurrentUserQuery } from "@/redux/api/baseApi";
+import {
+  useDeleteCurrentUserMutation,
+  useGetCartQuery,
+  useGetCurrentUserQuery,
+} from "@/redux/api/baseApi";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -8,8 +12,8 @@ const Navber = () => {
   // console.log(name, email, photo_url, "aiman");
   // const [isUser,setIsUser] = useState(false)
   const data = useGetCurrentUserQuery();
-  const [setDeleteCurrentUser,res] = useDeleteCurrentUserMutation();
-  const [isUser,setIsUser] = useState(0);
+  const [setDeleteCurrentUser, res] = useDeleteCurrentUserMutation();
+  const [isUser, setIsUser] = useState(0);
 
   // useEffect(()=>{
   //   fetch(`http://localhost:8000/setcurrentuser`)
@@ -17,15 +21,22 @@ const Navber = () => {
   //   .then(data=>console.log(data))
   // },[])
   // console.log(data?.data[0]);
-
+  const { currentData } = useGetCartQuery();
+  const { currentData: user } = useGetCurrentUserQuery();
+  console.log(currentData);
+  //   console.log(user[0]);
+  const cartData = currentData?.find(
+    (cartProduct) => cartProduct?.email === user[0]?.email
+  );
+  console.log(cartData);
   console.log(data?.data);
-  const handleLogOut = (email)=>{
+  const handleLogOut = (email) => {
     console.log(email);
- 
+
     setDeleteCurrentUser(email);
-    console.log(res)
-    setIsUser(res.deletedCount)
-  }
+    console.log(res);
+    setIsUser(res.deletedCount);
+  };
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -51,13 +62,13 @@ const Navber = () => {
             className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <a>Item 1</a>
+              <Link href="/">Home</Link>
             </li>
             <li>
-              <a>Parent</a>
+              <Link href="/products">Products</Link>
             </li>
             <li>
-              <a>Item 3</a>
+              <Link href="/signin">Sign In</Link>
             </li>
           </ul>
         </div>
@@ -69,7 +80,7 @@ const Navber = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/product">Products</Link>
+            <Link href="/products">Products</Link>
           </li>
           <li>
             <Link href="/signin">Sign In</Link>
@@ -94,7 +105,9 @@ const Navber = () => {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span className="badge badge-sm indicator-item">8</span>
+              <span className="badge badge-sm indicator-item">
+                {cartData?.products.length}
+              </span>
             </div>
           </div>
           <div
@@ -117,13 +130,14 @@ const Navber = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-              {
-                data.data ? <img
-                alt="Tailwind CSS Navbar component"
-                src={data?.data[0]?.photoUrl}
-              /> : "N/A"
-              }
-              
+              {data.data ? (
+                <img
+                  alt="Tailwind CSS Navbar component"
+                  src={data?.data[0]?.photoUrl}
+                />
+              ) : (
+                "N/A"
+              )}
             </div>
           </div>
           <ul
@@ -133,17 +147,16 @@ const Navber = () => {
             <li>
               <a className="justify-between">
                 Profile
-                {
-                  data.data &&  <span className="badge">{data?.data[0]?.username}</span>
-                }
-              
+                {data.data && (
+                  <span className="badge">{data?.data[0]?.username}</span>
+                )}
               </a>
             </li>
             <li>
               <a>Settings</a>
             </li>
             <li>
-              <a onClick={()=>handleLogOut(data?.data[0]?.email)}>Logout</a>
+              <a onClick={() => handleLogOut(data?.data[0]?.email)}>Logout</a>
             </li>
           </ul>
         </div>

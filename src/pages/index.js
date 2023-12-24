@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 export default function HomePage() {
   // const { name, email, photo_url } = useSelector((state) => state.userSlice);
   // console.log(name, email, photo_url, "aiman");
-  const {currentData  } = useGetProductsQuery();
+  const { currentData } = useGetProductsQuery();
   console.log(currentData);
   return (
     <>
@@ -23,10 +23,10 @@ export default function HomePage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="grid grid-cols-4 items-center w-[90%] mx-auto my-10">
-        {
-          currentData?.map((product)=><ProductCat product={product}/>)
-        }
+      <div className="grid lg:grid-cols-4 md:grid-cols-3 gap-5 sm:grid-cols-1 items-center w-[80%] mx-auto my-10">
+        {currentData?.map((product) => (
+          <ProductCat product={product} />
+        ))}
       </div>
     </>
   );
